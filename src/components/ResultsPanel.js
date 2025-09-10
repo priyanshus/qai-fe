@@ -74,9 +74,9 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
 
   // Generate a unique key for the current result to store in localStorage
   const resultKey = useMemo(() => {
-    if (!result || !result.qa_scenarios) return null;
+    if (!result || !result.analysis.qa_scenarios) return null;
     // Create a simple hash based on the test case titles and count
-    const titles = result.qa_scenarios.map(scenario => scenario.title).join('|');
+    const titles = result.analysis.qa_scenarios.map(scenario => scenario.title).join('|');
     return `qai_scenarios_${btoa(titles).slice(0, 16)}`;
   }, [result]);
 
@@ -106,9 +106,9 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
 
   // Calculate completion percentage
   const completionPercentage = useMemo(() => {
-    if (!result || !result.qa_scenarios || result.qa_scenarios.length === 0) return 0;
+    if (!result || !result.analysis.qa_scenarios || result.analysis.qa_scenarios.length === 0) return 0;
     const checkedCount = Object.values(checkedScenarios).filter(Boolean).length;
-    return Math.round((checkedCount / result.qa_scenarios.length) * 100);
+    return Math.round((checkedCount / result.analysis.qa_scenarios.length) * 100);
   }, [checkedScenarios, result]);
 
   // Handle checkbox toggle
@@ -185,7 +185,7 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
             <span className="ml-2 text-sm font-medium text-gray-700">{completionPercentage}%</span>
           </div>
           <span className="text-xs text-gray-500">
-            {Object.values(checkedScenarios).filter(Boolean).length} of {result.qa_scenarios.length} completed
+            {Object.values(checkedScenarios).filter(Boolean).length} of {result.analysis.qa_scenarios.length} completed
           </span>
         </div>
       </div>
@@ -209,7 +209,7 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
       <div className="mb-6">
         <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
           <div className="divide-y divide-gray-100">
-            {result.qa_scenarios.map((testCase, index) => {
+            {result.analysis.qa_scenarios.map((testCase, index) => {
               // Generate ID and risk if not provided
               const id = testCase.id || `TC${String(index + 1).padStart(3, '0')}`;
               const risk = testCase.risk || (testCase.priority === 'High' ? 'High' : 
@@ -364,7 +364,7 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
         <div className="space-y-3">
           <Accordion title="Features Impacted">
             <ul className="space-y-2">
-              {result.features_impacted.map((feature, index) => (
+              {result.analysis.features_impacted.map((feature, index) => (
                 <li key={index} className="flex items-start">
                   <svg className="h-5 w-5 text-blue-500 mr-2 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -377,7 +377,7 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
           
           <Accordion title="Modules Impacted">
             <ul className="space-y-2">
-              {result.modules_impacted.map((module, index) => (
+              {result.analysis.modules_impacted.map((module, index) => (
                 <li key={index} className="flex items-start">
                   <svg className="h-5 w-5 text-blue-500 mr-2 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -389,7 +389,7 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
           </Accordion>
           
           <Accordion title="Code Files Impacted">
-            {Object.keys(result.code_symbols_impacted).map((file, index) => (
+            {Object.keys(result.analysis.code_symbols_impacted).map((file, index) => (
               <div key={index} className="mb-2 p-2 bg-gray-50 border-l-4 border-blue-400 rounded">
                 <div className="flex items-center">
                   <svg className="h-4 w-4 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -402,7 +402,7 @@ const ResultsPanel = ({ result, isLoading, lastQuery }) => {
           </Accordion>
           
           <Accordion title="Risk Hotspots">
-            {result.risk_hotspots.map((hotspot, index) => {
+            {result.analysis.risk_hotspots.map((hotspot, index) => {
               const severityColor = 
                 hotspot.severity.toLowerCase() === 'high' ? 'border-red-400 bg-red-50' : 
                 hotspot.severity.toLowerCase() === 'medium' ? 'border-amber-400 bg-amber-50' : 
